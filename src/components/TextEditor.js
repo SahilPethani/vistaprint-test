@@ -10,6 +10,8 @@ function TextEditor({
   onDelete,
   onDuplicate,
   onToggleLock,
+  bringToFront,
+  sendToBack,
 }) {
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -178,22 +180,34 @@ function TextEditor({
 
         <div className="flex items-center">
           <button
-            className="px-6 flex gap-2 hover:bg-[#f8f8f8] h-[40px] items-center justify-center"
+            className="px-3 flex gap-2 hover:bg-[#f8f8f8] h-[40px] items-center justify-center"
             onClick={onDelete}
           >
             Delete
           </button>
           <button
-            className="px-6 flex gap-2 hover:bg-[#f8f8f8] h-[40px] items-center justify-center"
+            className="px-3 flex gap-2 hover:bg-[#f8f8f8] h-[40px] items-center justify-center"
             onClick={onDuplicate}
           >
             Duplicate
           </button>
           <button
-            className="px-6 flex gap-2 hover:bg-[#f8f8f8] h-[40px] items-center justify-center"
+            className="px-3 flex gap-2 hover:bg-[#f8f8f8] h-[40px] items-center justify-center"
             onClick={onToggleLock}
           >
             {text.locked ? "Unlock" : "Lock"}
+          </button>
+          <button
+            className="px-3 flex gap-2 hover:bg-[#f8f8f8] h-[40px] items-center justify-center"
+            onClick={sendToBack}
+          >
+            Send to Back
+          </button>
+          <button
+            className="px-3 flex gap-2 hover:bg-[#f8f8f8] h-[40px] items-center justify-center"
+            onClick={bringToFront}
+          >
+            Bring to Front
           </button>
         </div>
       </div>

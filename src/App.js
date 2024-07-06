@@ -20,6 +20,9 @@ function App() {
   const transformerRef = useRef(null);
   const stageRef = useRef(null);
 
+  const offsetX = 10;
+  const offsetY = 10;
+
   const addText = () => {
     setTexts([
       ...texts,
@@ -32,6 +35,8 @@ function App() {
         fontStyle: "",
         textDecoration: "",
         locked: false,
+        x: 50,
+        y: 50,
       },
     ]);
   };
@@ -85,8 +90,8 @@ function App() {
     const newTexts = texts.slice();
     newTexts.push({
       ...texts[index],
-      x: texts[index].x + 10,
-      y: texts[index].y + 10,
+      x: texts[index].x + offsetX,
+      y: texts[index].y + offsetY,
     });
     setTexts(newTexts);
   };
@@ -156,12 +161,12 @@ function App() {
           ...images,
           {
             image: img,
-            x: 100,
-            y: 100,
-            width: 100,
-            height: 100,
+            width: 50,
+            height: 50,
             rotation: 0,
             locked: false,
+            x: 50,
+            y: 50,
           },
         ]);
       };
@@ -188,8 +193,8 @@ function App() {
   const handleDuplicateImage = (index) => {
     const duplicatedImage = {
       ...images[index],
-      x: images[index].x + 10,
-      y: images[index].y + 10,
+      x: images[index].x + offsetX,
+      y: images[index].y + offsetY,
     };
     setImages([...images, duplicatedImage]);
   };
@@ -201,6 +206,30 @@ function App() {
       locked: !newImages[index].locked,
     };
     setImages(newImages);
+  };
+
+  const bringTextToFront = (index) => {
+    const textNode = stageRef.current.findOne(`#text-${index}`);
+    textNode.moveToTop();
+    setSelectedTextIndex(index); 
+  };
+
+  const sendTextToBack = (index) => {
+    const textNode = stageRef.current.findOne(`#text-${index}`);
+    textNode.moveToBottom();
+    setSelectedTextIndex(index); 
+  };
+
+  const bringImageToFront = (index) => {
+    const imageNode = stageRef.current.findOne(`#Image-${index}`);
+    imageNode.moveToTop();
+    setSelectedImageIndex(index); 
+  };
+
+  const sendImageToBack = (index) => {
+    const imageNode = stageRef.current.findOne(`#Image-${index}`);
+    imageNode.moveToBottom();
+    setSelectedImageIndex(index); 
   };
 
   return (
@@ -216,6 +245,8 @@ function App() {
           onDelete={() => handleDelete(selectedTextIndex)}
           onDuplicate={() => handleDuplicate(selectedTextIndex)}
           onToggleLock={() => toggleLockText(selectedTextIndex)}
+          bringToFront={() => bringTextToFront(selectedTextIndex)}
+          sendToBack={() => sendTextToBack(selectedTextIndex)}
         />
       )}
       {selectedImageIndex !== null && (
@@ -223,7 +254,9 @@ function App() {
           selectedImageIndex={selectedImageIndex}
           handleDeleteImage={handleDeleteImage}
           handleDuplicateImage={handleDuplicateImage}
-          onToggleLock={toggleLockImage}
+          onToggleLock={() => toggleLockImage(selectedImageIndex)}
+          bringToFront={() => bringImageToFront(selectedImageIndex)}
+          sendToBack={() => sendImageToBack(selectedImageIndex)}
           image={images[selectedImageIndex]}
         />
       )}
@@ -318,8 +351,6 @@ function App() {
                       id={`Image-${index}`}
                       width={image.width}
                       height={image.height}
-                      offsetX={image.width / 2}
-                      offsetY={image.height / 2}
                       rotation={image.rotation}
                       draggable={!image.locked}
                       onDragEnd={(e) => {
