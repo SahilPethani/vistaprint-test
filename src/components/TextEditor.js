@@ -30,6 +30,15 @@ function TextEditor({
   return (
     <div className="border-b relative z-50 bg-[#fff] shadow-lg">
       <div className="text-editor flex container mx-auto divide-x  justify-center">
+      <div className="min-w-[206px] flex items-center px-3">
+          <input
+            type="text"
+            name="text"
+            value={text.text}
+            className="Text-fild focus:outline-none border-b"
+            onChange={handleChange}
+          />
+        </div>
         <div className="min-w-[206px] flex items-center  rounded-full px-3 pr-5">
           <CiText className="text-[26px] mr-2" />
           <select
@@ -43,16 +52,7 @@ function TextEditor({
             <option value="Times New Roman">Times New Roman</option>
           </select>
         </div>
-        {/* <div className="min-w-[206px] flex items-center px-3">
-          <CiText className="text-[26px] mr-2" />
-          <input
-            type="text"
-            name="text"
-            value={text.text}
-            className="Text-fild focus:outline-none border-b"
-            onChange={handleChange}
-          />
-        </div> */}
+        
         <div className="min-w-[50px] flex items-center px-5">
           <button
             className="hover:bg-[#f8f8f8] w-[32px] h-[40px] text-xl font-bold"
@@ -76,17 +76,18 @@ function TextEditor({
         </div>
 
         <div className="flex gap-5 items-center px-5">
-          <img
+          {/* <img
             src={ColorPiker}
             alt=""
             className="w-[32px] h-[32px] object-contain mx-2"
-          />
-          {/* <input
+          /> */}
+          <input
             type="color"
             name="fill"
             value={text.fill}
             onChange={handleChange}
-          /> */}
+            className="w-[25px] h-[25px] object-contain mx-2"
+          />
 
           <div className="flex items-center">
             <div className="relative h-[32px] w-[32px]">
