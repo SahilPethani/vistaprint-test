@@ -16,6 +16,7 @@ function App() {
   const [images, setImages] = useState([]);
   const [selectedTextIndex, setSelectedTextIndex] = useState(null);
   const [selectedImageIndex, setSelectedImageIndex] = useState(null);
+  const [isTextBoxVisible, setIsTextBoxVisible] = useState(false);
 
   const transformerRef = useRef(null);
   const stageRef = useRef(null);
@@ -27,7 +28,7 @@ function App() {
     setTexts([
       ...texts,
       {
-        text: "New Text",
+        text: "Type text here",
         fontSize: 10,
         fontFamily: "Arial",
         fill: "black",
@@ -112,15 +113,11 @@ function App() {
 
     let newX = node.x();
     let newY = node.y();
-
-    // Ensure the text is within the horizontal boundaries
     if (newX < 0) {
       newX = 0;
     } else if (newX + node.width() > stageWidth) {
       newX = stageWidth - node.width();
     }
-
-    // Ensure the text is within the vertical boundaries
     if (newY < 0) {
       newY = 0;
     } else if (newY + node.height() > stageHeight) {
@@ -211,25 +208,25 @@ function App() {
   const bringTextToFront = (index) => {
     const textNode = stageRef.current.findOne(`#text-${index}`);
     textNode.moveToTop();
-    setSelectedTextIndex(index); 
+    setSelectedTextIndex(index);
   };
 
   const sendTextToBack = (index) => {
     const textNode = stageRef.current.findOne(`#text-${index}`);
     textNode.moveToBottom();
-    setSelectedTextIndex(index); 
+    setSelectedTextIndex(index);
   };
 
   const bringImageToFront = (index) => {
     const imageNode = stageRef.current.findOne(`#Image-${index}`);
     imageNode.moveToTop();
-    setSelectedImageIndex(index); 
+    setSelectedImageIndex(index);
   };
 
   const sendImageToBack = (index) => {
     const imageNode = stageRef.current.findOne(`#Image-${index}`);
     imageNode.moveToBottom();
-    setSelectedImageIndex(index); 
+    setSelectedImageIndex(index);
   };
 
   return (
@@ -261,15 +258,53 @@ function App() {
         />
       )}
       <div className="grid grid-cols-12">
-        <div className=" bg-[#f8f8f8e6] backdrop-blur-[10px] flex flex-col items-center pt-14">
+        <div className=" bg-[#f8f8f8e6] backdrop-blur-[10px] flex flex-col items-center pt-14 relative z-50">
           <div className="w-full flex flex-col gap-3">
-            <button
-              className="flex items-center justify-center flex-col w-[80%] mx-auto pb-2"
-              onClick={addText}
-            >
-              <TfiText className="text-2xl" />
+            <button className="flex items-center justify-center flex-col w-[80%] mx-auto pb-2 relative">
+              <TfiText
+                className="text-2xl"
+                onClick={() => {
+                  setIsTextBoxVisible(!isTextBoxVisible);
+                  setSelectedTextIndex(null);
+                }}
+              />
               Text
+              {isTextBoxVisible && (
+                <div className="flex justify-center items-center absolute top-0 left-[100px] z-30 bg-gray-100">
+                  <div className="bg-white p-6 rounded-lg shadow-lg w-80">
+                    <div className="text-left">
+                      <h2 className="text-xl font-bold mb-4">Text</h2>
+                      <p className="text-gray-500 mb-4 text-sm">
+                        Edit your text below, or click on the field you'd like
+                        to edit directly on your design.
+                      </p>
+                    </div>
+                    {texts.map((text, i) => (
+                      <input
+                        type="text"
+                        name="text"
+                        value={text.text === "Type text here" ? "" : text.text}
+                        className="Text-fild focus:outline-none border-b my-3"
+                        placeholder="Type text here"
+                        onChange={(e) =>
+                          handleTextChange(i, "text", e.target.value)
+                        }
+                        onClick={() => {
+                          setSelectedTextIndex(i);
+                        }}
+                      />
+                    ))}
+                    <button
+                      className="w-full py-2 bg-black text-white font-semibold rounded-full mt-3"
+                      onClick={addText}
+                    >
+                      New Text Field
+                    </button>
+                  </div>
+                </div>
+              )}
             </button>
+
             <button className="flex items-center justify-center flex-col w-[80%] mx-auto py-2">
               <AiFillAppstore className="text-2xl" />
               Designs
@@ -290,7 +325,7 @@ function App() {
           </div>
         </div>
 
-        <div className="relative h-[calc(100vh-80px)] col-span-11 bg-[#F8F8F8] pl-[100px] pr-[50px] py-5">
+        <div className="relative h-[calc(100vh-80px)] col-span-11 bg-[#9d2424] pl-[100px] pr-[50px] py-5  ">
           <div className="">
             <img src={backgroundImg} alt="" />
             <Stage
@@ -316,6 +351,7 @@ function App() {
                       onClick={() => {
                         setSelectedTextIndex(i);
                         setSelectedImageIndex(null);
+                        setIsTextBoxVisible(true);
                       }}
                       onTap={() => {
                         setSelectedTextIndex(i);
@@ -384,7 +420,13 @@ function App() {
 
                 <Transformer
                   ref={transformerRef}
-                  rotateEnabled={false}
+                  rotateEnabled={
+                    !texts[selectedTextIndex]?.locked &&
+                    !images[selectedImageIndex]?.locked
+                      ? true
+                      : false
+                  }
+                  rotateAnchorOffset={10}
                   anchorFill={"rgb(0, 161, 255)"}
                   anchorSize={4}
                   enabledAnchors={
